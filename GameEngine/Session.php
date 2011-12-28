@@ -101,7 +101,7 @@
         		$this->PopulateVar();
 
         		$logging->addLoginLog($this->uid, $_SERVER['REMOTE_ADDR']);
-        		$database->addActiveUser($_SESSION['username'], $this->time);
+        		$database->addActiveUser($_SESSION['username'], $this->time); 
         		$database->updateUserField($_SESSION['username'], "sessid", $_SESSION['sessid'], 0);
 
         		header("Location: dorf1.php");
@@ -148,16 +148,19 @@
         		global $database;
         		$this->userarray = $this->userinfo = $database->getUserArray($_SESSION['username'], 0);
         		$this->username = $this->userarray['username'];
-        		$this->uid = $this->userarray['id'];
+        		$this->uid = $_SESSION['id_user'] = $this->userarray['id'];
         		$this->gpack = $this->userarray['gpack'];
         		$this->access = $this->userarray['access'];
         		$this->plus = ($this->userarray['plus'] > $this->time);
         		$this->villages = $database->getVillagesID($this->uid);
         		$this->tribe = $this->userarray['tribe'];
         		$this->isAdmin = $this->access >= MODERATOR;
-        		$this->alliance = $this->userarray['alliance'];
+        		$this->alliance = $_SESSION['alliance_user'] = $this->userarray['alliance'];
         		$this->checker = $_SESSION['checker'];
         		$this->mchecker = $_SESSION['mchecker'];
+                	$this->sit1 = $this->userarray['sit1'];
+                        $this->sit2 = $this->userarray['sit2'];
+                        $this->cp = floor($this->userarray['cp']);
         		$this->gold = $this->userarray['gold'];
         		$this->oldrank = $this->userarray['oldrank'];
         		$_SESSION['ok'] = $this->userarray['ok'];

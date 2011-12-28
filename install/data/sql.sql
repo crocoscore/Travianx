@@ -45,6 +45,21 @@ CREATE TABLE IF NOT EXISTS `%PREFIX%a2b` (
 -- Dumping data for table `%PREFIX%a2b`
 --
 
+--
+-- Table structure for table `%PREFIX%links`
+--
+
+CREATE TABLE `%PREFIX%links` (
+  `id` INT( 25 ) UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY ,
+  `userid` INT( 25 ) NOT NULL ,
+  `name` VARCHAR( 50 ) NOT NULL ,
+  `url` VARCHAR( 150 ) NOT NULL ,
+  `pos` INT( 10 ) NOT NULL
+) ENGINE = MYISAM;
+
+--
+-- Dumping data for table `%PREFIX%links`
+--
 
 -- --------------------------------------------------------
 
@@ -1234,7 +1249,7 @@ CREATE TABLE IF NOT EXISTS `%PREFIX%users` (
   `protect` int(10) unsigned NOT NULL,
   `quest` tinyint(2) NOT NULL,
   `gpack` varchar(255) NOT NULL DEFAULT 'gpack/travian_default/',
-  `cp` int(10) unsigned NOT NULL DEFAULT '1',
+  `cp` float(14,5) unsigned NOT NULL DEFAULT '1',
   `lastupdate` int(11) unsigned NOT NULL,
   `RR` int(255) NOT NULL DEFAULT '0',
   `Rc` int(255) NOT NULL DEFAULT '0',

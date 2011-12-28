@@ -67,6 +67,7 @@ define("ATAG_EMPTY","Tag empty");
 define("ANAME_EMPTY","Name empty");
 define("ATAG_EXIST","Tag taken");
 define("ANAME_EXIST","Name taken");
+define("NOT_OPENED_YET","Server not started yet.");
 
 //COPYRIGHT
 define("TRAVIAN_COPYRIGHT","TravianX 100% Open Source Travian Clone.");
@@ -154,6 +155,8 @@ define("Q5_RESP","As you noticed, building orders take rather long. The world of
 //======================================================//
 //================ UNITS - DO NOT EDIT! ================//
 //======================================================//
+define("U0","Hero");
+
 //ROMAN UNITS
 define("U1","Legionnaire");
 define("U2","Praetorian");

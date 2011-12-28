@@ -263,7 +263,7 @@
 
         	function checkactiveSession($username, $sessid) {
         		$q = "SELECT username FROM " . TB_PREFIX . "users where username = '$username' and sessid = '$sessid' LIMIT 1";
-        		$result = mysql_query($q, $this->connection);
+        		$result = mysql_query($q, $this->connection);   
         		if(mysql_num_rows($result) != 0) {
         			return true;
         		} else {
@@ -392,7 +392,7 @@
         				$q = "INSERT into " . TB_PREFIX . "fdata (vref,f1t,f2t,f3t,f4t,f5t,f6t,f7t,f8t,f9t,f10t,f11t,f12t,f13t,f14t,f15t,f16t,f17t,f18t,f26,f26t) values($vid,3,4,1,2,2,2,3,4,4,3,3,4,4,1,4,2,1,2,1,15)";
         				break;
         			case 11:
-        				$q = "INSERT into " . TB_PREFIX . "fdata (vref,f1t,f2t,f3t,f4t,f5t,f6t,f7t,f8t,f9t,f10t,f11t,f12t,f13t,f14t,f15t,f16t,f17t,f18t,f26,f26t) values($vid,3,1,1,3,1,4,4,3,3,4,4,3,1,4,4,2,4,4,1,15)";
+        				$q = "INSERT into " . TB_PREFIX . "fdata (vref,f1t,f2t,f3t,f4t,f5t,f6t,f7t,f8t,f9t,f10t,f11t,f12t,f13t,f14t,f15t,f16t,f17t,f18t,f26,f26t) values($vid,3,1,1,3,1,4,4,3,3,2,2,3,1,4,4,2,4,4,1,15)";
         				break;
         			case 12:
         				$q = "INSERT into " . TB_PREFIX . "fdata (vref,f1t,f2t,f3t,f4t,f5t,f6t,f7t,f8t,f9t,f10t,f11t,f12t,f13t,f14t,f15t,f16t,f17t,f18t,f26,f26t) values($vid,1,4,1,1,2,2,3,4,4,3,3,4,4,1,4,2,1,2,1,15)";
@@ -414,6 +414,30 @@
 				return $row[0];
 			}
 
+             public function countOasisTroops($vref){
+                //count oasis troops: $troops_o
+            $troops_o=0;
+            $o_unit2=mysql_query("select * from ".TB_PREFIX."units where `vref`='".$vref."'");
+            $o_unit=mysql_fetch_array($o_unit2);
+            
+            for ($i=1;$i<51;$i++)
+            {
+                $troops_o+=$o_unit[$i];
+            }                        
+            $troops_o+=$o_unit['hero'];   
+            
+            $o_unit2=mysql_query("select * from ".TB_PREFIX."enforcement where `vref`='".$vref."'");
+            while ($o_unit=@mysql_fetch_array($o_unit2))
+            {
+                for ($i=1;$i<51;$i++)
+                {
+                    $troops_o+=$o_unit[$i];
+                }                        
+                $troops_o+=$o_unit['hero'];
+            }
+            return $troops_o;  
+            }
+            
 			public function canConquerOasis($vref,$wref) {
 				$AttackerFields = $this->getResourceLevel($vref);
 				for($i=19;$i<=38;$i++) {
@@ -421,9 +445,10 @@
 				}
 				if($this->VillageOasisCount($vref) < floor(($HeroMansionLevel-5)/5)) {
 					$OasisInfo = $this->getOasisInfo($wref);
-					if($OasisInfo['conqured'] == 0 || $OasisInfo['conqured'] != 0 && $OasisInfo['loyalty'] < 99 / min(3,(4-$this->VillageOasisCount($OasisInfo['conqured'])))) {
-						$CoordsVillage = $database->getCoor($vref);
-						$CoordsOasis = $database->getCoor($wref);
+                    $troopcount = $this->countOasisTroops($wref);
+					if($OasisInfo['conqured'] == 0 || $OasisInfo['conqured'] != 0 && $OasisInfo['loyalty'] < 99 / min(3,(4-$this->VillageOasisCount($OasisInfo['conqured']))) && $troopcount == 0) {
+						$CoordsVillage = $this->getCoor($vref);
+						$CoordsOasis = $this->getCoor($wref);
 						if(abs($CoordsOasis['x']-$CoordsVillage['x'])<=3 && abs($CoordsOasis['y']-$CoordsVillage['y'])<=3) {
 							return True;
 						} else {
@@ -437,8 +462,12 @@
 				}
 			}
 
-			public function conquerOasis($wref,$vref,$uid) {
-				$q = "UPDATE `".TB_PREFIX."odata` SET conqured=$vref,loyalty=100,lastupdated=".time().",$owner=$uid,name='Occupied Oasis' WHERE wref=$wref";
+           
+            
+			public function conquerOasis($vref,$wref) {
+				$vinfo = $this->getVillage($vref);
+				$uid = $vinfo['owner'];
+				$q = "UPDATE `".TB_PREFIX."odata` SET conqured=$vref,loyalty=100,lastupdated=".time().",owner=$uid,name='Occupied Oasis' WHERE wref=$wref";
         		return mysql_query($q, $this->connection);
 			}
 
@@ -632,7 +661,7 @@
 
 
         	function getVillagesID($uid) {
-        		$q = "SELECT wref from " . TB_PREFIX . "vdata where owner = $uid order by capital DESC";
+        		$q = "SELECT wref from " . TB_PREFIX . "vdata where owner = $uid order by capital DESC,pop DESC";
         		$result = mysql_query($q, $this->connection);
         		$array = $this->mysql_fetch_all($result);
         		$newarray = array();
@@ -1491,7 +1520,7 @@
         		global $building, $village;
 				$q = "DELETE FROM ".TB_PREFIX."bdata WHERE field=$field AND wid=$wid";
 				mysql_query($q, $this->connection);
-        		$uprequire = $building->resourceRequired($field,$village->resarray['f'.$field.'t']);
+        		$uprequire = $building->resourceRequired($field,$village->resarray['f'.$field.'t'],0);
         		$q = "INSERT INTO ".TB_PREFIX."demolition VALUES (".$wid.",".$field.",".($this->getFieldLevel($wid,$field)-1).",".(time()+floor($uprequire['time']/2)).")";
 				return mysql_query($q, $this->connection);
         	}
@@ -1522,7 +1551,7 @@
         	}
 
         	function getJobs($wid) {
-        		$q = "SELECT * FROM " . TB_PREFIX . "bdata where wid = $wid order by ID ASC";
+        		$q = "SELECT * FROM " . TB_PREFIX . "bdata where wid = $wid order by timestamp ASC";
         		$result = mysql_query($q, $this->connection);
         		return $this->mysql_fetch_all($result);
         	}
@@ -1797,9 +1826,11 @@
 				}
         	}
 
-        	function getHero($uid=0) {
-				if (!$uid) {
-					$q = "SELECT * FROM ".TB_PREFIX."hero";
+        	function getHero($uid=0,$all=0) {
+				if ($all) {
+					$q = "SELECT * FROM ".TB_PREFIX."hero WHERE uid=$uid";
+				} elseif (!$uid) {
+	        		$q = "SELECT * FROM ".TB_PREFIX."hero";
 				} else {
 	        		$q = "SELECT * FROM ".TB_PREFIX."hero WHERE dead=0 AND uid=$uid LIMIT 1";
 				}
@@ -2401,6 +2432,20 @@
         		$result = mysql_query($q, $this->connection);
         		return mysql_fetch_array($result);
         	}
+
+            function getLinks($id){
+                $q = 'SELECT * FROM `' . TB_PREFIX . 'links` WHERE `userid` = ' . $id . ' ORDER BY `pos` ASC';
+                return mysql_query($q, $this->connection);                
+                            
+            }  
+            
+            function getArrayMemberVillage($uid){
+				
+		$q = 'SELECT a.wref, a.name, b.x, b.y from '.TB_PREFIX.'vdata AS a left join '.TB_PREFIX.'wdata AS b ON b.id = a.wref where owner = '.$uid.' order by capital DESC,pop DESC';
+		$result = mysql_query($q, $this->connection);
+		$array = $this->mysql_fetch_all($result);
+		return $array;
+		}
 
 
         }

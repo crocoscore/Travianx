@@ -173,13 +173,18 @@ class Battle {
 		$winner = false;
 		// bij 0 alle deelresultaten
 		$cap = $ap = $dp = $cdp = $rap = $rdp = 0;
-        if ($Attacker['uhero'] != 0){ 
-		$atkhero= $this->getBattleHero($Attacker['id']);
+        
+        //exit($type);
+
+        if ($Attacker['uhero'] != 0)
+        { 
+            //exit($Attacker['id']);
+          $atkhero= $this->getBattleHero($Attacker['id']);
         }
         //$defhero= $this->getBattleHero($Defender['id']);
-		//
-		// Berekenen het totaal aantal punten van Aanvaller
-		//
+        //
+        // Berekenen het totaal aantal punten van Aanvaller
+        //
         $start = ($att_tribe-1)*10+1;
         $end = ($att_tribe*10);
 		
@@ -236,22 +241,25 @@ class Battle {
 				if(in_array($i,$catapult)) {
 					$catp += $Attacker['u'.$i];
 				}
-				// Punten van de Rammen van de aanvaller
-				if(in_array($i,$rams)) {
-					$ram += $Attacker['u'.$i];
-				}
-				$involve += $Attacker['u'.$i]; 
-				$units['Att_unit'][$i] = $Attacker['u'.$i];
-			}
-            if ($Attacker['uhero'] != 0){
+				 // Punten van de Rammen van de aanvaller
+                if(in_array($i,$rams)) 
+                {
+                    $ram += $Attacker['u'.$i];
+                }
+                $involve += $Attacker['u'.$i]; 
+                $units['Att_unit'][$i] = $Attacker['u'.$i];
+            }
+            
+            if ($Attacker['uhero'] != 0)
+            {
                 $units['Att_unit']['hero'] = $Attacker['uhero'];
                 $cap += $Attacker['uhero']*$atkhero['atk'];
                 $ap += $Attacker['uhero']*$atkhero['atk'];
                 $ap = $ap * $atkhero['ob'];
                 $cap = $cap * $atkhero['ob'];
-                    }
+            }
            
-		}
+        }
 		
 		//
 		// Berekent het totaal aantal punten van de Defender
@@ -315,7 +323,8 @@ class Battle {
 			$dp += ((2*(pow($residence,2)))*(pow($factor,$def_wall)));
 			$cdp += ((2*(pow($residence,2)))*(pow($factor,$def_wall)));
 		}
-		else {
+		else 
+        {
 			// Berekening van de Basic defence bonus "Residence" 			
 			$dp += (2*(pow($residence,2)));
 			$cdp += (2*(pow($residence,2)));
@@ -328,7 +337,10 @@ class Battle {
 		//
 		// Formule voor de berekening van Defensive Punten
 		//
-			$rdp = ($dp * ($ap/$rap)) + ($cdp * ($cap/$rap)) + 10;
+			 if ($rap==0) 
+                 $rdp = ($dp) + ($cdp) + 10;
+            else             
+                 $rdp = ($dp * ($ap/$rap)) + ($cdp * ($cap/$rap)) + 10;
 		//
 		// En de Winnaar is....:
 		//
@@ -384,10 +396,12 @@ class Battle {
 			$ram -= round($ram*$result[1]/100);
             $catp -= round($catp*$result[1]/100);  
 		}
-		else if($type == 3) {
+		else if($type == 3) 
+        {
 			// Attacker
 			$result[1] = ($winner)? pow((($rdp*$moralbonus)/$rap),$Mfactor) : 1;
 			$result[1] = round($result[1],8);
+            
 			// Defender
 			$result[2] = (!$winner)?  pow(($rap/($rdp*$moralbonus)),$Mfactor) : 1;
 			$result[2] = round($result[2],8);
@@ -421,17 +435,19 @@ class Battle {
         
 		}
 		// Formule voor de berekening van katapulten nodig
-		if($catp > 0 && $tblevel != 0) {
-			$wctp = pow(($rap/$rdp),1.5);
-			$wctp = ($wctp >= 1)? 1-0.5/$wctp : 0.5*$wctp;
-			$wctp *= $catp;
+		 if($catp > 0 && $tblevel != 0) {
+            $wctp = pow(($rap/$rdp),1.5);
+            $wctp = ($wctp >= 1)? 1-0.5/$wctp : 0.5*$wctp;
+            $wctp *= $catp;
 
-			$need = round((($moralbonus * (pow($tblevel,2) + $tblevel + 1)) / (8 * (round(200 * pow(1.0205,$att_ab['a8']))/200) / (1 * $bid34[$stonemason]['attri']/100))) + 0.5);
-			// Aantal katapulten om het gebouw neer te halen
-			$result[3] = $need;
-			// Aantal Katapulten die handeling
-			$result[4] = $wctp;
-		}
+            $need = round((($moralbonus * (pow($tblevel,2) + $tblevel + 1)) / (8 * (round(200 * pow(1.0205,$att_ab['a8']))/200) / (1 * $bid34[$stonemason]['attri']/100))) + 0.5);
+            // Aantal katapulten om het gebouw neer te halen
+            $result[3] = $need;
+            // Aantal Katapulten die handeling
+            $result[4] = $wctp;
+            $result[5] = $moralbonus;
+            $result[6] = $att_ab['a8'];
+        }
         if($ram > 0 && $walllevel != 0) {
             $wctp = pow(($rap/$rdp),1.5);
             $wctp = ($wctp >= 1)? 1-0.5/$wctp : 0.5*$wctp;
@@ -448,13 +464,49 @@ class Battle {
 		$result[6] = pow($rap/$rdp*$moralbonus,$Mfactor);		
 
 		$total_att_units = count($units['Att_unit']);
-		$start = ($att_tribe-1)*10+1;
-        $end = ($att_tribe*10);
+        $start = intval(($att_tribe-1)*10+1);
+        $end = intval(($att_tribe*10));
+        //exit($start."|".$end."|".$att_tribe);
+        //$y=1;
+        for($i=$start;$i <= $end;$i++)
+        {    
+            $y = $i-(($att_tribe-1)*10);
+            //exit(intval("$y"));
+            $result['casualties_attacker'][$y] = round($result[1]*$units['Att_unit'][$i]);  
+            //$y++;
+            //exit($result['casualties_attacker'][$y]);
+            
+        } 
+        //$result['casualties_attacker']['11'] = 0;
+        //exit($result['casualties_attacker']['2']);
+        //$_hero=11;
+        if ($units['Att_unit']['hero']>0)
+        {
+            $_result=mysql_query("select `owner` from " . TB_PREFIX . "vdata where `wref`='".$Attacker['from']."'");
+            $fdb = mysql_fetch_array($_result);
+            $hero_owner=$fdb['owner'];
+            
+            $_result=mysql_query("select * from " . TB_PREFIX . "hero where `dead`='0' and `uid`='".$hero_owner."'");
+            $fdb = mysql_fetch_array($_result);
+            $hero_id=$fdb['heroid'];
+            $hero_health=$fdb['health'];
+            $damage_health=round(100*$result[1]);
+            //exit($damage_health."|".$hero_health."|".$hero_owner);
+            if ($hero_health<=$damage_health)
+            {
+                //hero die
+                $result['casualties_attacker']['11'] = 1; 
+                mysql_query("update " . TB_PREFIX . "hero set `dead`='1' where `heroid`='".$hero_id."'");
+            }
+            else
+            {
+                mysql_query("update " . TB_PREFIX . "hero set `health`=`health`-".$damage_health." where `heroid`='".$hero_id."'");
+            }
+        }
+            
+        //exit($result['casualties_attacker']['11']);
+        //$result['casualties_attacker'][11] = round($result[1]*$units['Att_unit']['hero']); 
         
-		for($i=$start;$i <= $end;$i++){
-			$y = $i-(($att_tribe-1)*10);
-			$result['casualties_attacker'][$y] = round($result[1]*$units['Att_unit'][$i]);
-		}
 		
 		// Work out bounty
         $start = ($att_tribe-1)*10+1;
@@ -608,6 +660,12 @@ class Battle {
 				if($DefenderFields['f'.$i.'t'] == 36) {
 					$TrapperArray[] = $i;
 				}
+				if($DefenderFields['f'.$i.'t'] == $data['ctar1'] && $data['ctar1'] != 0) {
+					$ctarf[1] = $i;
+				}
+				if($DefenderFields['f'.$i.'t'] == $data['ctar2'] && $data['ctar2'] != 0 && ($data['ctar1'] != $data['ctar2'] || $data['ctar2'] <= 18)) {
+					$ctarf[2]= $i;
+				}
 			}
 			$defense_total += $BonusPalRes;
 
@@ -640,6 +698,10 @@ class Battle {
 					$database->setVillageLevel($data['to'],'f40',0);
 				} else {
 					$RequiredRams=array(1=>array(1,2,2,3,4,6,7,10,12,14,17,20,23,27,31,35,39,43,48,53),array(1,4,8,13,19,27,36,46,57,69,83,98,114,132,151,171,192,214,238,263),array(1,2,4,6,8,11,15,19,23,28,34,40,46,53,61,69,77,86,96,106));
+					$DC = max(1,$BonusStoneMason) * max(1,$BonusPalRes) / (pow(1.015,$Blacksmith['b'.$UnitRam])) ;
+					$L = $DefenderData['wall'];
+					$L2 = round(($DefenderData['wall'] - 1) /2);
+					$DDR = $DC / ( $L*($L+1)/8 + 5 + (24.875 + 0.625*$L2)*$L2/2 );
 					//calculate damage to wall based on surviving rams
 				}
 				$RecountReqd = True;
@@ -649,11 +711,11 @@ class Battle {
 				$RequiredCatapults = $RequiredCatapultsMax = $BuildingLevelMax = array();
 				if(!empty($RequiredCatapults)) { reset($RequiredCatapults); }
 				for($i=1;$i<=2;$i++) {
-					if($data['ctar'.$i] == 0) {
+					if($data['ctar'.$i] == 0 || $ctarf[$i] == 0) {
 						$data['ctar'.$i] = $DefenderFieldsArray[rand(0,count($DefenderFieldsArray)-1)];
 						if($data['ctar2'] == 0 && $i == 1) { $data['ctar2'] = $data['ctar1']; }
 					}
-					$RequiredCatapults[$i] = round((($DefenderData['pop'] < $AttackerData['pop'] ? min(3,pow($AttackerData['pop'] / $DefenderData['pop'],0.3)) : 1) * (pow($DefenderField['f'.$data['ctar'.$i]],2) + $DefenderField['f'.$data['ctar'.$i]] + 1) / (8 * (round(200 * pow(1.0205,$Blacksmith['b'.$UnitCatapult])) / 200) / max(1,($data['ctar'.$i]>=18?max(1,$BonusStoneMason + $BonusArtefactDurability):1)))) + 0.5);
+					$RequiredCatapults[$i] = round((($DefenderData['pop'] < $AttackerData['pop'] ? min(3,pow($AttackerData['pop'] / $DefenderData['pop'],0.3)) : 1) * (pow($DefenderField['f'.$ctarf[$i]],2) + $DefenderField['f'.$ctarf[$i]] + 1) / (8 * (round(200 * pow(1.0205,$Blacksmith['b'.$UnitCatapult])) / 200) / max(1,($data['ctar'.$i]>=18?max(1,$BonusStoneMason + $BonusArtefactDurability):1)))) + 0.5);
 					$BuildingLevelMax[$i] = 20;
 					if($DefenderData['capital'] != 1 && $data['ctar'.$i] <= 18 || in_array($data['ctar'.$i],$TrapperArray)) { $BuildingLevelMax[$i] = 10; }
 					if(in_array($data['ctar'.$i],$ResourceImprovementArray)) { $BuildingLevelMax[$i] = 5; }
