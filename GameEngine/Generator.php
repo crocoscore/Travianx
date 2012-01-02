@@ -102,8 +102,8 @@ public function procMtime($time, $pref = 3) {
             break;
         }
         */
-        $time += 3600*7; //Edit this yourself
-
+-       $time += 3600*7; //Edit this yourself
++       $time += 0; //Edit this yourself
 
         if (date('Ymd',time()) == date('Ymd',$time)) {
         //if ((time()-$time) < 24*60*60 && (time()-$time) > 0) {
