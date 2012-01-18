@@ -171,6 +171,7 @@
         			$result2 = mysql_query($q2, $this->connection);
         			$dbarray2 = mysql_fetch_array($result2);
         		} else
+        			$dbarray = mysql_fetch_array($result);
         			if($dbarray['sit2'] != 0) {
         				$q3 = "SELECT password FROM " . TB_PREFIX . "users where id = " . $dbarray['sit2'] . " and access != " . BANNED;
         				$result3 = mysql_query($q3, $this->connection);
