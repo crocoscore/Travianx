@@ -38,7 +38,7 @@ include_once("GameEngine/Data/hero_full.php");
 		<td class="xp"><img class="bar" src="img/x.gif" style="width:<?php echo (2*$hero_info['attack'])+1; ?>px;" alt="<?php echo $hero['atk']; ?>" title="<?php echo $hero['atk']; ?>" /></td>
 		<td class="up"><span class="none">
         <?php
-        if($hero_info['points'] > 0){
+	if($hero_info['attack'] <= 99 and $hero_info['points'] > 0){        
             echo "<a href=\"build.php?id=".$id."&add=off\">(<b>+</b>)</a>";
         }else {
             echo "<span class=\"none\">(+)</span>";
@@ -53,7 +53,7 @@ include_once("GameEngine/Data/hero_full.php");
 		<td class="xp"><img class="bar" src="img/x.gif" style="width:<?php echo (2*$hero_info['defence'])+1; ?>px;" alt="<?php echo $hero['di'] . "/" . $hero['dc']; ?>"  title="<?php echo $hero['di'] . "/" . $hero['dc']; ?>" /></td>
 		<td class="up"><span class="none">
         <?php
-        if($hero_info['points'] > 0){
+        if($hero_info['defence'] <=99 and $hero_info['points'] > 0){
             echo "<a href=\"build.php?id=".$id."&add=deff\">(<b>+</b>)</a>";
         }else {
             echo "<span class=\"none\">(+)</span>";
@@ -68,7 +68,7 @@ include_once("GameEngine/Data/hero_full.php");
 		<td class="xp"><img class="bar" src="img/x.gif" style="width:<?php echo ($hero['ob']-1)*1000+1; ?>px;" alt="<?php echo ($hero['ob']-1)*100; ?>%" title="<?php echo ($hero['ob']-1)*100; ?>%" /></td>
 		<td class="up"><span class="none">
         <?php
-        if($hero_info['points'] > 0){
+        if($hero_info['attackbonus'] <= 99 and $hero_info['points'] > 0){
             echo "<a href=\"build.php?id=".$id."&add=obonus\">(<b>+</b>)</a>";
         }else {
             echo "<span class=\"none\">(+)</span>";
@@ -83,7 +83,7 @@ include_once("GameEngine/Data/hero_full.php");
 		<td class="xp"><img class="bar" src="img/x.gif" style="width:<?php echo ($hero['db']-1)*1000+1; ?>px;" alt="<?php echo ($hero['db']-1)*100; ?>%" title="<?php echo ($hero['db']-1)*100; ?>%" /></td>
 		<td class="up"><span class="none">
         <?php
-        if($hero_info['points'] > 0){
+        if($hero_info['defencebonus'] <= 99 and $hero_info['points'] > 0){
             echo "<a href=\"build.php?id=".$id."&add=dbonus\">(<b>+</b>)</a>";
         }else {
             echo "<span class=\"none\">(+)</span>";
@@ -98,7 +98,7 @@ include_once("GameEngine/Data/hero_full.php");
 		<td class="xp"><img class="bar" src="img/x.gif" style="width:<?php echo ($hero_info['regeneration']*2)+1; ?>px;" alt="<?php echo ($hero_info['regeneration']*100*.05*SPEED); ?>%/Day" title="<?php echo ($hero_info['regeneration']*100*.05*SPEED); ?>%/Day" /></td>
 		<td class="up"><span class="none">
         <?php
-        if($hero_info['points'] > 0){
+        if($hero_info['regeneration'] <= 99 and $hero_info['points'] > 0){
             echo "<a href=\"build.php?id=".$id."&add=reg\">(<b>+</b>)</a>";
         }else {
             echo "<span class=\"none\">(+)</span>";
